@@ -31,7 +31,7 @@ public class Lis {
     }
 
     public static void main(String... args) {
-        int lis = find(new int[] { 3, 2, 6, 4, 5, 1 });
+        int lis = find(new int[]{1, 3, 6, 7, 9, 4, 10, 5, 6});
         System.out.println(lis);
     }
 }

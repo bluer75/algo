@@ -9,7 +9,7 @@ public class Neighbors {
     public List<Integer> cellCompete(int[] states, int days) {
         while (days-- > 0) {
             int prev = 0;
-            int current = states[0];
+            int current;
             int next = (states.length > 1) ? states[1] : 0;
             for (int i = 0; i < states.length; i++) {
                 current = states[i];

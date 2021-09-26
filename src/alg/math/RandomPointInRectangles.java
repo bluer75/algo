@@ -23,7 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * 1/2 * 1/8 -> 1/16. This means they are not uniformly selected.
  * In order to achieve that each rectangle needs to be selected with weight that corresponds to number of points it has.
  * We calculated running sum of available points in all rectangles and then select number from 0 to that total.
- * In case of A and B that would be 2, 10 - selecting 1..2 (rectangle A with 2 points) has probability of 
+ * In case of A and B that would be 2, 8 - selecting 1..2 (rectangle A with 2 points) has probability of
  * 2 * 1/10 and selecting 3..10 (rectangle B with 8 points) has probability of 8 * 1/10. This gives for each 
  * point the same probability of 1/10. 2*1/10*1/2 = 8*1/10*1/8 = 1/10.
  */

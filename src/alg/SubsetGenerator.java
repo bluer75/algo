@@ -2,6 +2,7 @@ package alg;
 
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Generates all subsets for given set.
@@ -33,6 +34,24 @@ public class SubsetGenerator {
     }
 
     /**
+     * Generate subset iteratively.
+     */
+    static void generateIterative(int[] elems) {
+        List<List<Integer>> subsets = new LinkedList<>();
+        subsets.add(new LinkedList<>()); // empty set
+        for (int elem : elems) {
+            List<List<Integer>> sets = new LinkedList<>();
+            for (List<Integer> subset : subsets) { // create new subsets by adding next element to existing subsets
+                List<Integer> set = new LinkedList<>(subset);
+                set.add(elem);
+                sets.add(set); // add new subsets to existing subsets
+            }
+            subsets.addAll(sets);
+        }
+        System.out.println(subsets);
+    }
+
+    /**
      * Generates iteratively all subsets.
      * All possible subsets of n elements are like all possible binary numbers of size n bits.
      * For n = 2 -> 2^2 -> 4 - 00, 01, 10, 11
@@ -54,7 +73,13 @@ public class SubsetGenerator {
     }
 
     public static void main(String... args) {
-        generate(new int[] { 1, 2, 3 });
-        generateBinary(new int[] { 1, 2, 3 });
+        int[] elems = new int[]{1, 2, 3};
+        System.out.println("recursive...");
+        generate(elems);
+        System.out.println("iterative...");
+        generateIterative(elems);
+        System.out.println("binary...");
+        generateBinary(elems);
+
     }
 }

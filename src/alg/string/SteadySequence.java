@@ -12,7 +12,7 @@ import java.util.Map;
  *
  * Write a function that returns an integer representing the length of the smallest substring to replace.
  *
- * For example for string GAAATAAA it shoul d return 5 as the optimal solution is to replace AAATA with TTCCG.
+ * For example for string GAAATAAA it should return 5 as the optimal solution is to replace AAATA with TTCCG.
  *
  * Solution requires O(n) time and is based on sliding window finding the smallest substring with all characters having
  * to many occurrences.
