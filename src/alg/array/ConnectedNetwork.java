@@ -6,7 +6,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * There are n computers numbered from 0 to n-1 connected by ethernet cables connections forming a network where 

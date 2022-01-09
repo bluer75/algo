@@ -6,30 +6,27 @@ import java.util.stream.IntStream;
 
 /**
  * Pick a Random Element from an Infinite Stream.
- * Naive implementation would be to store elements populated so far and picking up randomly an index. 
+ * Naive implementation would be to store elements populated so far and picking up randomly an index.
  * This would mean space complexity O(n).
  * Using Reservoir Sampling algorithm this can be done with O(1) space.
  * Variation of this problem is to store k random elements which requires O(k) space.
  */
 public class ReservoirSampling {
     public static int pick(IntStream stream) {
+        ThreadLocalRandom rnd = ThreadLocalRandom.current();
         int rndValue = 0; // randomly selected value
         int value; // current value
-        int n = 0; // element counter
-        int p;
+        int n = 1; // element counter
         OfInt ints = stream.iterator();
         while (ints.hasNext()) {
-            n++;
             value = ints.nextInt();
-            // generate random number from 1 to n
+            // probability of selecting first item is 1/1, second is 1/2, third is 1/3,...
             // probability of selecting each number is the same: 1 / n
-            // probability of selecting
-            p = ThreadLocalRandom.current().nextInt(0, n) + 1; // [1..n]
-            if (p == n) {
+            if (rnd.nextInt(n++) == 0) { // probability of selecting 0 from [0..n-1] is 1/n
                 // last value selected
                 rndValue = value;
             }
-            System.out.printf("%d %d %d\n", value, p, rndValue);
+            System.out.printf("%d %d\n", value, rndValue);
         }
         return rndValue;
     }

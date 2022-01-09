@@ -20,7 +20,7 @@ import java.util.Random;
  * of digits in the maximum element). If maxx <= n^c, then the complexity can be written as O(n*log b(n)). 
  * 
  * Example for input 10,21,17,34,44,11,654,123
- *  Based on the algorithm, we will sort the input array according to the one's digit (least significant digit).
+ *  Based on the algorithm, we will sort the input array according to the one's digit (the least significant digit).
  * 0: 10 
  * 1: 21 11 
  * 2: 
@@ -97,7 +97,7 @@ public class RadixSort {
         }
         // fill sorted values
         int digit = 0;
-        for (int i = a.length - 1; i >= 0; i--) { // needs to goes from back to be stable
+        for (int i = a.length - 1; i >= 0; i--) { // needs to go from back to be stable
             digit = (b[i] / positionValue) % 10;
             a[counts[digit] - 1] = b[i];
             counts[digit]--;
