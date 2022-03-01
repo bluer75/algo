@@ -10,9 +10,9 @@ import java.util.Arrays;
  * Input: [3,2,6,5,0,3]
  * Output: 7, buy on day 2, sell on day 3 - profit = 6-2 = 4 -  buy on day 5, sell on day 6 - profit = 3-0 = 3.
  * 
- * Solution is based on {@link StockMaxProfitTwoTransactions}.
+ * Solution is based on {@link https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/}.
  * 
- * DP solution takes (n) time and O(1) space.
+ * DP solution takes O(nk) time and O(k) space.
  */
 public class StockMaxProfitKTransactions {
 
@@ -21,9 +21,9 @@ public class StockMaxProfitKTransactions {
             return 0;
         }
         kmax = Math.min(kmax, prices.length);
-        int[] maxBuy = new int[kmax + 1]; // profit for i-th element, if last operation was buy
+        int[] maxBuy = new int[kmax + 1]; // profit for i-th element, if last operation was a buy
         int[] maxBuyPrev = new int[kmax + 1];
-        int[] maxSell = new int[kmax + 1]; // profit for i-th element, if last operation was sell
+        int[] maxSell = new int[kmax + 1]; // profit for i-th element, if last operation was a sell
         int[] maxSellPrev = new int[kmax + 1];
         Arrays.fill(maxBuyPrev, -prices[0]); // if we buy first there should be no profit
         for (int i = 1; i <= prices.length; i++) {

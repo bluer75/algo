@@ -5,13 +5,13 @@ package alg.array;
  * Example:
  * Input: [1,0,1,1,0]
  * Output: 4
- * Explanation: Flip the first zero will get the the maximum number of consecutive 1s.
+ * Explanation: Flip the first zero will get the maximum number of consecutive 1s.
  * After flipping, the maximum number of consecutive 1s is 4.
- * 
- * Solution takes O(n) time and space and requires pre-computing array where we store for each 0 number of 
+ *
+ * Solution takes O(n) time and space and requires pre-computing array where we store for each 0 number of
  * consecutive 1s on the right.
  * For [1,0,1,1,0] it is [0,2,0,0,0]
- * 
+ *
  * Alternatively this can be solved with O(1) space if we use sliding window.
  */
 public class MaxConsecutiveOnes {
@@ -40,8 +40,8 @@ public class MaxConsecutiveOnes {
     }
 
     /**
-     * Generic solution finding longest subarray of 1s with up to K modifications.
-     * It keep count of zeros in the window - if we hit the limit (K) we shrink it on the left side.
+     * Generic solution finding the longest subarray of 1s with up to K modifications.
+     * It keeps count of zeros in the window - if we hit the limit (K) we shrink it on the left side.
      */
     public int longestOnes(int[] A, int K) {
         int zeros = 0;
@@ -65,7 +65,7 @@ public class MaxConsecutiveOnes {
     }
 
     public static void main(String... args) {
-        System.out.println(new MaxConsecutiveOnes().findMaxConsecutiveOnes(new int[] { 1, 0, 1, 1, 0 }));
-        System.out.println(new MaxConsecutiveOnes().longestOnes(new int[] { 1, 0, 1, 1, 0 }, 1));
+        System.out.println(new MaxConsecutiveOnes().findMaxConsecutiveOnes(new int[]{1, 0, 1, 1, 0}));
+        System.out.println(new MaxConsecutiveOnes().longestOnes(new int[]{1, 0, 1, 1, 0}, 1));
     }
 }
