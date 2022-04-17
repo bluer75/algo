@@ -3,14 +3,15 @@ package alg.dp;
 import java.util.Arrays;
 
 /**
- * Longest increasing subsequence using DP and bottom-up approach.
+ * Find length of the longest increasing subsequence.
  * Naive implementation is to generate all possible subsets and select from increasing ones the longest one.
  * The complexity for naive implementation is exponential O(2^n).
  * DP base solution uses bottom-up with memoization and takes O(n^2).
+ * Optimized solution based on binary search takes O(n log n) time.
  */
 public class Lis {
 
-    static int find(int[] input) {
+    static int findDP(int[] input) {
         int maxIndex = 1; // index where max length is
         int[] max = new int[input.length]; // max[i] stores LIS that ends at index i
         Arrays.fill(max, 1); // each element is already a subsequence
@@ -30,8 +31,35 @@ public class Lis {
         return max[maxIndex];
     }
 
+    static int findBS(int[] input) {
+        int n = input.length, max = 0;
+        int[] lis = new int[n + 1]; // lis[k] - the smallest value ending increasing sequence of length k - it's sorted
+        lis[0] = Integer.MIN_VALUE; // sentinel for length 0
+        for (int num : input) {
+            if (num > lis[max]) {
+                // add num at the end and increase max
+                lis[++max] = num;
+            } else {
+                // replace the smallest element greater than or equal to num - use BS for left most element
+                int l = 1, r = max, m = 0;
+                while (l < r) {
+                    m = l + (r - l) / 2;
+                    if (lis[m] < num) {
+                        l = m + 1;
+                    } else {
+                        r = m;
+                    }
+                }
+                lis[l] = num;
+            }
+        }
+        return max;
+    }
+
     public static void main(String... args) {
-        int lis = find(new int[]{1, 3, 6, 7, 9, 4, 10, 5, 6});
-        System.out.println(lis);
+        //int[] input = new int[]{1, 3, 6, 7, 9, 4, 10, 5, 6};
+        int[] input = new int[]{0, 1, 2, 3};
+        System.out.println(findDP(input));
+        System.out.println(findBS(input));
     }
 }
