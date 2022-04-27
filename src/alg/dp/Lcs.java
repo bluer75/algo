@@ -8,7 +8,7 @@ public class Lcs {
 
     /**
      * Naive recursive approach - some suffixes are checked more than once.
-     * Execution time is exponential - O(2^n) 
+     * Execution time is exponential - O(2^n)
      */
     static int find(String x, String y) {
         return find(x, y, x.length() - 1, y.length() - 1);
@@ -53,7 +53,26 @@ public class Lcs {
                 }
             }
         }
+        System.out.println(reconstruct(x, y, res));
         return res[m][n];
+    }
+
+    private static String reconstruct(String x, String y, int[][] res) {
+        StringBuilder sb = new StringBuilder();
+        int row = x.length(), col = y.length(); // start in bottom right corner
+        while (row > 0 && col > 0) {
+            if (x.charAt(row - 1) == y.charAt(col - 1)) {
+                // row and col point to the same character -> add it to the result and move up and left
+                sb.append(x.charAt(row - 1));
+                row--;
+                col--;
+            } else if (res[row][col - 1] > res[row][col]) { // follow greater values
+                col--; // move left
+            } else {
+                row--; // move up
+            }
+        }
+        return sb.reverse().toString();
     }
 
     public static void main(String... str) {
