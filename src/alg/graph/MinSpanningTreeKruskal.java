@@ -1,15 +1,9 @@
 package alg.graph;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
- * Kruskal's algorithm finding Minimum Spanning Tree.
+ * Kruskal's algorithm finding Minimum Spanning Tree for an undirected graph.
  * It is greedy algorithm that processes all edges using Priority Queue to select edge with minimum weight.
  * If selected edge doesn't form a cycle with already selected ones it's part of MST.
  * This implementation uses UnionFind to detect cycles - checks for connected components.
@@ -24,9 +18,9 @@ public class MinSpanningTreeKruskal {
     private int min;
 
     private static class Edge {
-        final int u;
-        final int v;
-        final int w;
+        private final int u;
+        private final int v;
+        private final int w;
 
         Edge(int u, int v, int w) {
             this.u = u;
@@ -34,61 +28,20 @@ public class MinSpanningTreeKruskal {
             this.w = w;
         }
 
-        int getWeight() {
-            return w;
-        }
-
         @Override
         public String toString() {
             return "Edge[u=" + u + ",v=" + v + ",w=" + w + "]";
         }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + u;
-            result = prime * result + v;
-            result = prime * result + w;
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            Edge other = (Edge) obj;
-            if (u != other.u)
-                return false;
-            if (v != other.v)
-                return false;
-            if (w != other.w)
-                return false;
-            return true;
-        }
     }
 
-    public MinSpanningTreeKruskal(Graph g) {
-        numOfVertices = g.getNumOfVertices();
+    public MinSpanningTreeKruskal(int size, List<Edge> edges) {
+        numOfVertices = size;
         uf = new UnionFind(numOfVertices);
         mst = new ArrayList<>(numOfVertices - 1);
         // edges are sorted based on weight
-        unprocessed = new PriorityQueue<Edge>(Comparator.comparingInt(Edge::getWeight));
-        unprocessed.addAll(getEdges(g));
+        unprocessed = new PriorityQueue<Edge>(Comparator.comparingInt(edge -> edge.w));
+        unprocessed.addAll(edges);
 
-    }
-
-    private static Set<Edge> getEdges(Graph g) {
-        Set<Edge> edges = new HashSet<>();
-        for (int i = 0; i < g.getNumOfVertices(); i++) {
-            int index = i;
-            edges.addAll(g.getEdges(i).stream().map(e -> new Edge(index, e.to, e.weight)).collect(Collectors.toSet()));
-        }
-        return edges;
     }
 
     public void find() {
@@ -110,23 +63,23 @@ public class MinSpanningTreeKruskal {
     }
 
     public static void main(String... args) {
-        Graph g = new Graph(9);
-        g.addEdge(0, 1, 4);
-        g.addEdge(0, 7, 8);
-        g.addEdge(1, 2, 8);
-        g.addEdge(1, 7, 11);
-        g.addEdge(2, 8, 2);
-        g.addEdge(2, 5, 4);
-        g.addEdge(2, 3, 7);
-        g.addEdge(3, 4, 9);
-        g.addEdge(3, 5, 14);
-        g.addEdge(4, 5, 10);
-        g.addEdge(5, 6, 2);
-        g.addEdge(6, 8, 6);
-        g.addEdge(6, 7, 1);
-        g.addEdge(7, 8, 7);
+        List<Edge> edges = new LinkedList<>();
+        edges.add(new Edge(0, 1, 4));
+        edges.add(new Edge(0, 7, 8));
+        edges.add(new Edge(1, 2, 8));
+        edges.add(new Edge(1, 7, 11));
+        edges.add(new Edge(2, 8, 2));
+        edges.add(new Edge(2, 5, 4));
+        edges.add(new Edge(2, 3, 7));
+        edges.add(new Edge(3, 4, 9));
+        edges.add(new Edge(3, 5, 14));
+        edges.add(new Edge(4, 5, 10));
+        edges.add(new Edge(5, 6, 2));
+        edges.add(new Edge(6, 8, 6));
+        edges.add(new Edge(6, 7, 1));
+        edges.add(new Edge(7, 8, 7));
 
-        MinSpanningTreeKruskal mst = new MinSpanningTreeKruskal(g);
+        MinSpanningTreeKruskal mst = new MinSpanningTreeKruskal(9, edges);
         mst.find();
         mst.printMST();
     }

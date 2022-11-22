@@ -1,7 +1,6 @@
 package alg.graph;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Prim's algorithm finding Minimum Spanning Tree for an undirected graph.
@@ -13,10 +12,9 @@ import java.util.stream.Collectors;
  * It takes O(V^2) and can be improved up to O(E log V) using Fibonacci heaps.
  */
 public class MinSpanningTreePrim {
-    private Graph g;
+    private Map<Integer, List<Edge>> vertexEdges;
     private List<Edge> mst;
     private PriorityQueue<Edge> minHeap;
-    private UnionFind uf;
     private int numOfVertices;
     private Set<Integer> visited;
     private int min;
@@ -26,78 +24,43 @@ public class MinSpanningTreePrim {
         final int v;
         final int w;
 
-        Edge(int u, int v, int w) {
-            this.u = u;
-            this.v = v;
+        Edge(int from, int to, int w) {
+            this.u = from;
+            this.v = to;
             this.w = w;
-        }
-
-        int getWeight() {
-            return w;
         }
 
         @Override
         public String toString() {
             return "Edge[u=" + u + ",v=" + v + ",w=" + w + "]";
         }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + u;
-            result = prime * result + v;
-            result = prime * result + w;
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            Edge other = (Edge) obj;
-            if (u != other.u)
-                return false;
-            if (v != other.v)
-                return false;
-            if (w != other.w)
-                return false;
-            return true;
-        }
     }
 
-    public MinSpanningTreePrim(Graph g) {
-        this.g = g;
+    public MinSpanningTreePrim(int size, List<Edge> edges) {
         visited = new HashSet<>();
-        numOfVertices = g.getNumOfVertices();
+        numOfVertices = size;
+        vertexEdges = new HashMap<>();
+        for (Edge edge : edges) {
+            vertexEdges.putIfAbsent(edge.u, new LinkedList<>());
+            vertexEdges.get(edge.u).add(edge);
+            // make it undirected - create opposite edge
+            vertexEdges.putIfAbsent(edge.v, new LinkedList<>());
+            vertexEdges.get(edge.v).add(new Edge(edge.v, edge.u, edge.w));
+        }
         mst = new ArrayList<>(numOfVertices - 1);
         // edges are sorted based on weight
-        minHeap = new PriorityQueue<Edge>(Comparator.comparingInt(Edge::getWeight));
-    }
-
-    private static Set<Edge> getEdges(Graph g) {
-        Set<Edge> edges = new HashSet<>();
-        for (int i = 0; i < g.getNumOfVertices(); i++) {
-            int index = i;
-            edges.addAll(g.getEdges(i).stream().map(e -> new Edge(index, e.to, e.weight)).collect(Collectors.toSet()));
-        }
-        return edges;
+        minHeap = new PriorityQueue<>(Comparator.comparingInt(edge -> edge.w));
     }
 
     public void find() {
         // add all edges for starting node -> 0
         visited.add(0);
-        g.getEdges(0).stream().map(e -> new Edge(0, e.to, e.weight)).forEach(minHeap::offer);
+        vertexEdges.get(0).forEach(minHeap::offer);
         while (!minHeap.isEmpty() && mst.size() < numOfVertices - 1) {
             // take edge with minimum weight
             Edge edge = minHeap.poll();
             if (!visited.contains((edge.v))) {
-                g.getEdges(edge.v).stream().filter(e -> !visited.contains(e.to)).map(
-                    e -> new Edge(edge.v, e.to, e.weight)).forEach(minHeap::offer);
+                vertexEdges.get(edge.v).stream().filter(e -> !visited.contains(e.u)).forEach(minHeap::offer);
                 mst.add(edge);
                 visited.add(edge.v);
                 min += edge.w;
@@ -111,38 +74,23 @@ public class MinSpanningTreePrim {
     }
 
     public static void main(String... args) {
-        Graph g = new Graph(9);
-        // make it undirected
-        g.addEdge(0, 1, 4);
-        g.addEdge(1, 0, 4);
-        g.addEdge(0, 7, 8);
-        g.addEdge(7, 0, 8);
-        g.addEdge(1, 2, 8);
-        g.addEdge(2, 1, 8);
-        g.addEdge(1, 7, 11);
-        g.addEdge(7, 1, 11);
-        g.addEdge(2, 8, 2);
-        g.addEdge(8, 2, 2);
-        g.addEdge(2, 5, 4);
-        g.addEdge(5, 2, 4);
-        g.addEdge(2, 3, 7);
-        g.addEdge(3, 2, 7);
-        g.addEdge(3, 4, 9);
-        g.addEdge(4, 3, 9);
-        g.addEdge(3, 5, 14);
-        g.addEdge(5, 3, 14);
-        g.addEdge(4, 5, 10);
-        g.addEdge(5, 4, 10);
-        g.addEdge(5, 6, 2);
-        g.addEdge(6, 5, 2);
-        g.addEdge(6, 8, 6);
-        g.addEdge(8, 6, 6);
-        g.addEdge(6, 7, 1);
-        g.addEdge(7, 6, 1);
-        g.addEdge(7, 8, 7);
-        g.addEdge(8, 7, 7);
+        List<Edge> edges = new LinkedList<>();
+        edges.add(new Edge(0, 1, 4));
+        edges.add(new Edge(0, 7, 8));
+        edges.add(new Edge(1, 2, 8));
+        edges.add(new Edge(1, 7, 11));
+        edges.add(new Edge(2, 8, 2));
+        edges.add(new Edge(2, 5, 4));
+        edges.add(new Edge(2, 3, 7));
+        edges.add(new Edge(3, 4, 9));
+        edges.add(new Edge(3, 5, 14));
+        edges.add(new Edge(4, 5, 10));
+        edges.add(new Edge(5, 6, 2));
+        edges.add(new Edge(6, 8, 6));
+        edges.add(new Edge(6, 7, 1));
+        edges.add(new Edge(7, 8, 7));
 
-        MinSpanningTreePrim mst = new MinSpanningTreePrim(g);
+        MinSpanningTreePrim mst = new MinSpanningTreePrim(9, edges);
         mst.find();
         mst.printMST();
     }

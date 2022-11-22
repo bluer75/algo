@@ -1,15 +1,17 @@
 package alg.graph;
 
 import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.Queue;
 
 /**
  * Given an undirected graph, return true if and only if it is bipartite.
- * Graph is bipartite if we can split it's set of nodes into two independent subsets A and B such 
+ * Graph is bipartite if we can split it's set of nodes into two independent subsets A and B such
  * that every edge in the graph has one node in A and another node in B.
- * 
+ *
  * The graph is given as adjacency list.
- * 
+ *
  * Example 1:
  * Input: [[1,3], [0,2], [1,3], [0,2]]
  * Output: true
@@ -27,20 +29,59 @@ import java.util.Queue;
  * |  \ |
  * 3----2
  * We cannot find a way to divide the set of nodes into two independent subsets.
- * 
+ *
  * Solution is based on BFS traversal.
  * It requires O(V + E) time and O(V) space.
  */
 public class Bipartite {
-    public boolean isBipartite(int[][] graph) {
+    private enum Algorithm {
+        DFS_ITERATIVE, DFS_RECURSIVE, BFS
+    }
+
+    public boolean isBipartite(int[][] graph, Algorithm alg) {
         if (graph == null || graph.length <= 1) {
             return true;
         }
-        // 0 unvisited, 1 - visited/colored with 1, 2 - visited/colored with 2
-        int[] colors = new int[graph.length];
-        for (int v = 0; v < graph.length; v++) {
+        int n = graph.length;
+        int[] colors = new int[n]; // 0 - unvisited, 1/-1 colored/visited
+        var res = true;
+        for (int v = 0; v < n && res; v++) {
             if (colors[v] == 0) {
-                if (!bfs(graph, colors, v)) {
+                res = switch (alg) {
+                    case DFS_ITERATIVE -> dfsIterative(graph, colors, v, 1);
+                    case DFS_RECURSIVE -> dfsRecursive(graph, colors, v, 1);
+                    case BFS -> bfs(graph, colors, v, 1);
+                };
+            }
+        }
+        return res;
+    }
+
+    private boolean dfsRecursive(int[][] graph, int[] colors, int node, int color) {
+        colors[node] = color;
+        for (int n : graph[node]) {
+            if (colors[n] == 0) {
+                if (!dfsRecursive(graph, colors, n, -color)) {
+                    return false;
+                }
+            } else if (colors[n] == color) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean dfsIterative(int[][] graph, int[] colors, int node, int color) {
+        Deque<Integer> stack = new ArrayDeque<>(graph.length);
+        stack.push(node);
+        colors[node] = color;
+        while (!stack.isEmpty()) {
+            int v = stack.pop();
+            for (int n : graph[v]) {
+                if (colors[n] == 0) {
+                    colors[n] = -colors[v];
+                    stack.push(n);
+                } else if (colors[n] == colors[v]) {
                     return false;
                 }
             }
@@ -48,20 +89,18 @@ public class Bipartite {
         return true;
     }
 
-    private boolean bfs(int[][] graph, int[] colors, int v) {
-        Queue<Integer> queue = new ArrayDeque<>(graph.length);
-        queue.offer(v);
-        colors[v] = 1;
-        int color = 0;
+    private boolean bfs(int[][] graph, int[] colors, int node, int color) {
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(node);
+        colors[node] = color;
         while (!queue.isEmpty()) {
-            v = queue.poll();
-            color = colors[v] == 1 ? 2 : 1;
-            for (int neighbor : graph[v]) {
-                if (colors[neighbor] == colors[v]) {
+            int v = queue.poll();
+            for (int n : graph[v]) {
+                if (colors[n] == 0) {
+                    colors[n] = -colors[v];
+                    queue.offer(n);
+                } else if (colors[n] == colors[v]) {
                     return false;
-                } else if (colors[neighbor] == 0) {
-                    colors[neighbor] = color;
-                    queue.offer(neighbor);
                 }
             }
         }
@@ -69,6 +108,17 @@ public class Bipartite {
     }
 
     public static void main(String... args) {
-        System.out.println(new Bipartite().isBipartite(new int[][] { { 1, 2, 3 }, { 0, 2 }, { 0, 1, 3 }, { 0, 2 } }));
+        int[][][] graphs = new int[][][]{
+            {{1, 2, 3}, {0, 2}, {0, 1, 3}, {0, 2}},
+            {{1, 3}, {0, 2}, {1, 3}, {0, 2}},
+            {{}, {2, 4, 6}, {1, 4, 8, 9}, {7, 8}, {1, 2, 8, 9}, {6, 9}, {1, 5, 7, 8, 9}, {3, 6, 9}, {2, 3, 4, 6, 9},
+                {2, 4, 5, 6, 7, 8}}
+        };
+        for (Algorithm alg : Algorithm.values()) {
+            System.out.println(alg);
+            for (int[][] graph : graphs) {
+                System.out.println(new Bipartite().isBipartite(graph, alg));
+            }
+        }
     }
 }
