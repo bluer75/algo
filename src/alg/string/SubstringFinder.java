@@ -1,7 +1,10 @@
 package alg.string;
 
+import java.math.BigInteger;
+import java.util.Random;
+
 /**
- * For given text s (size n) and pattern p (size m) find first index where pattern occurs in text. 
+ * For given text s (size n) and pattern p (size m) find first index where pattern occurs in text.
  */
 public class SubstringFinder {
 
@@ -35,7 +38,7 @@ public class SubstringFinder {
      * Knuth–Morris–Pratt - O(n + m).
      * No backup - works with text as stream.
      * Uses preprocessing phase - O(r * m) time/space - to build DFA.
-     * Searching phase complexity is independent from the alphabet size. 
+     * Searching phase complexity is independent of the alphabet size.
      */
     public int findKMP(String s, String p) {
         final int r = 255; // size of alphabet
@@ -56,7 +59,7 @@ public class SubstringFinder {
     }
 
     /**
-     * Builds DFA table for given pattern and alphabet size. 
+     * Builds DFA table for given pattern and alphabet size.
      * DFA stores for each alphabet letter and each pattern letter next valid state.
      */
     private int[][] buildDfa(String p, int r) {
@@ -80,7 +83,7 @@ public class SubstringFinder {
      * Knuth–Morris–Pratt - O(n + m).
      * No backup - works with text as stream.
      * Uses preprocessing phase - O(m) time/space - to build auxiliary array that is
-     * independent from the alphabet size. 
+     * independent from the alphabet size.
      */
     public int findKMP2(String s, String p) {
         int n = s.length();
@@ -105,7 +108,7 @@ public class SubstringFinder {
 
     /**
      * Builds auxiliary array for given pattern.
-     * Value for index i is the largest integer smaller than i such that 
+     * Value for index i is the largest integer smaller than i such that
      * substring 0..a[i] is a suffix of 0..i - the longest suffix that is also a prefix
      */
     private int[] buildAuxArray(String p) {
@@ -125,34 +128,37 @@ public class SubstringFinder {
         return aux;
     }
 
+    private final int R = 256;
+    private final long Q = BigInteger.probablePrime(31, new Random()).longValue();
+    private long RM;
+
     /**
      * Rabin-Karp - O(n + m).
      * No backup needed, it uses rolling hashes to find the match.
-     * The hash value is computed once for pattern - O(m) - and compared with each rolling hash 
-     * updated in constant - O(1) - time for text. 
+     * The hash value is computed once for pattern - O(m) - and compared with each rolling hash
+     * updated in constant - O(1) - time for text.
      */
     public int findRK(String s, String p) {
         int n = s.length();
         int m = p.length();
-        int i = 0;
+        if (n < m) {
+            return -1;
+        }
         long hs = hash(s, m);
         long hp = hash(p, m);
+        if (hp == hs && equal(s, 0, p)) {
+            return 0;
+        }
         RM = getRm(m);
-        while (i < n - m) {
-            // check for string equality only if their hashes match  
-            if (hp == hs && s.substring(i, i + m).equals(p)) {
-                // match
-                return i;
+        for (int i = m; i < n; i++) {
+            hs = rehash(hs, s.charAt(i - m), s.charAt(i));
+            // check for string equality only if their hashes match
+            if (hp == hs && equal(s, i - m + 1, p)) {
+                return i - m + 1;
             }
-            hs = rehash(hs, s.charAt(i), s.charAt(i + m));
-            i++;
         }
         return -1;
     }
-
-    private final int R = 256;
-    private final long Q = 10_000_019;
-    private long RM;
 
     /**
      * Calculates the hash for given string of size m.
@@ -169,13 +175,27 @@ public class SubstringFinder {
     }
 
     /**
-     * Calculates new hash value based on existing hash by removing the first character (a) and adding new 
+     * Calculates new hash value based on existing hash by removing the first character (a) and adding new
      * one at the end (b).
      * rehash(h, a, b) = ((h - a * R^(m-1)) * R + b) % Q.
      * Can be optimized if R^(m-1) % Q is precalculated.
      */
     private long rehash(long h, char a, char b) {
-        return ((h - a * RM % Q) * R + b) % Q;
+        h = (h + Q - RM * a % Q) % Q;
+        h = (h * R + b) % Q;
+        return h;
+    }
+
+    /**
+     * Compares strings.
+     */
+    private boolean equal(String s, int j, String p) {
+        for (int i = 0; i < p.length(); i++) {
+            if (s.charAt(i + j) != p.charAt(i)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -190,10 +210,8 @@ public class SubstringFinder {
     }
 
     public static void main(String... args) {
-        // abcxabcdabxabcdabcdabde
-        String s = "abaaabaabc";
-        // abcdabd
-        String p = "abaab";
+        String s = "abcxabcdabxabcdabcdabde";
+        String p = "abcdabd";
         SubstringFinder sf = new SubstringFinder();
         System.out.println(sf.findBF(s, p));
         System.out.println(sf.findKMP(s, p));
