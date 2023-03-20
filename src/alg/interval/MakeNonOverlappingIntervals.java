@@ -22,7 +22,7 @@ import java.util.Comparator;
  * 
  * This takes O(n log n), where n i number of intervals.
  */
-public class MakeNonOverlapingIntervals {
+public class MakeNonOverlappingIntervals {
     public int eraseOverlapIntervals(int[][] intervals) {
         if (intervals.length < 2) {
             return 0;
@@ -41,7 +41,7 @@ public class MakeNonOverlapingIntervals {
     }
 
     public static void main(String... args) {
-        System.out.println(new MakeNonOverlapingIntervals()
+        System.out.println(new MakeNonOverlappingIntervals()
                 .eraseOverlapIntervals(new int[][] { { 1, 2 }, { 2, 3 }, { 3, 4 }, { 1, 3 } }));
     }
 }
