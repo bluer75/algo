@@ -37,7 +37,7 @@ public class BrickWallCut {
             int edge = 0;
             for (int b : row) {
                 edge += b;
-                edges.merge(edge, 1, (i, j) -> i + j);
+                edges.merge(edge, 1, Integer::sum);
             }
             wallLength = edge;
         }
